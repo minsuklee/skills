@@ -13,6 +13,7 @@ Robin이 만들어 사용하는 Claude Code Skill 모음입니다.
 | [gpt-image2](#gpt-image2) | OpenAI GPT Image 2 이미지 생성/편집 | `gpt-image-2로 로고 만들어줘` |
 | [agent-research](#agent-research) | 에이전트 팀 기반 종합 리서치 | `~에 대해 조사해줘` |
 | [agent-1on1](#agent-1on1) | 에이전트 1:1 대화로 개선 | `에이전트랑 1on1 하고 싶어` |
+| [agent-stat](#agent-stat) | 트레잇 벡터 기반 에이전트 설계·생성 | `리뷰어 에이전트 만들어줘` |
 | [manpower](#manpower) | AI 프롬프팅 스킬 레벨 측정 | `/manpower` |
 | [paper-trending](#paper-trending) | HuggingFace 트렌딩 논문 요약 | `트렌딩 논문 보여줘` |
 | [worklog](#worklog) | Claude Code 세션 기반 워크로그 | `/worklog` |
@@ -110,6 +111,22 @@ OpenAI `gpt-image-2` 모델을 사용한 고품질 이미지 생성 및 편집 �
 - 역할 명확성, 실패 복기, 엣지 케이스 발굴, 협업 개선 등을 점검
 - 대화에서 도출된 개선점을 에이전트 정의 파일(`.claude/agents/*.md`)에 직접 반영
 - 기존 내용 보존 원칙 — 추가·정제·강화 우선, 삭제는 명시적 요청 시에만
+
+---
+
+### agent-stat
+
+에이전트를 막연한 산문 프롬프트 대신 **스탯을 찍듯이** 3계층 구조(Role · Trait Vector · Policy)로 설계·생성하는 스킬입니다.
+
+- **3계층 모델**: Role(무엇을) → Trait Vector(어떤 방식으로) → Policy(실제 행동)로 위에서 아래로 유도
+- **8축 트레잇 벡터**(각 1~5): 주도성·근거성·계획성·사회성·협력성·위험성향·도구성향·반성성
+- 각 축의 값을 구체적 행동 정책으로 번역하고, 정책 줄마다 출처 트레잇 태그(예: `(근거성5)`)로 추적성 부여
+- 아키타입 프리셋(리뷰어·리서처·빌더·코치·조율자·분석가 등)에서 출발해 미세조정
+- 정합성 점검(양극 충돌·상승 조합·올-5 경고)과 정책 충돌 해소(안전 > 정확성 > 주도성) 내장
+- 결과물은 `.claude/agents/{name}.md` 정의 파일(스탯 시트 표 포함)
+- `references/trait-policy-map.md`(축별 정책 사전), `references/archetypes.md`(프리셋), `assets/agent-template.md` 포함
+
+**다른 스킬과의 경계:** 에이전트 1명을 의도적으로 설계·생성하면 이 스킬, 팀 전체 아키텍처+오케스트레이터까지 구성하면 `/harness:harness`, 이미 있는 에이전트를 대화로 점검·개선하면 [`agent-1on1`](#agent-1on1).
 
 ---
 
