@@ -20,6 +20,7 @@ Robin이 만들어 사용하는 Claude Code Skill 모음입니다.
 | [project-spec-writer](#project-spec-writer) | XML 기반 프로젝트 스펙·빌드 플랜 작성 | `프로젝트 스펙 써줘` |
 | [codex-cli](#codex-cli) | OpenAI Codex CLI(`codex exec`) 호출·두 번째 의견·코드 리뷰 | `codex 로 한 번 더 봐줘` |
 | [codex-image](#codex-image) | Codex CLI 내장 `image_generation` 툴로 N장 병렬 이미지 생성 | `codex 로 이미지 5장 동시에` |
+| [power-crawl](#power-crawl) | Playwright MCP 기반 고속 웹 데이터 수집·크롤링 | `이 사이트 전체 페이지 돌면서 긁어와` |
 
 ---
 
@@ -198,6 +199,25 @@ Codex CLI 의 내장 `image_generation` 툴로 이미지를 생성하는 스킬�
 - `codex exec` 를 `run_in_background: true` 로 N개 띄워 진정한 병렬 (실측: 5장 동시 = 직렬 대비 약 2.85배)
 - 5개씩 묶어 순차 실행하는 배치 헬퍼 `scripts/codex_imagegen_batch.sh` 제공
 - 작업 폴더에 PNG 자동 저장, 결과 검증 패턴 포함
+
+---
+
+### power-crawl
+
+Playwright MCP 를 e2e 테스트 도구가 아니라 **고속 데이터 수집 엔진**으로 쓰는 크롤링 스킬입니다.
+
+- **수집 사다리**(L0 내부 JSON API → L1 임베디드 JSON → L2 DOM 추출 → L3 실제 렌더)를 위에서부터 시도해 가장 빠른 경로를 선택
+- `browser_network_requests` 로 페이지 뒤에 숨은 JSON API 를 발굴 — 찾으면 수천 건도 호출 몇 번에 종료
+- 페이지네이션·무한스크롤을 **단일 도구 호출 안에서 루프**로 처리, 상세 팬아웃은 워커 풀로 동시성 8~16
+- 수집 데이터를 모델 컨텍스트에 통과시키지 않고 `filename` 으로 **곧바로 파일 저장**(JSONL/CSV)
+- `scripts/finalize.py` 로 중복 제거 + **필드별 채움률** 산출 → 조용한 셀렉터 실패 탐지
+- 재현 가능한 `crawl-report.md`(수집 경로·스키마·누락·제약) 산출
+- 로그인은 사용자 본인이 수행, 2FA·캡차·봇 차단 우회는 하지 않음
+- `references/recipes.md`(상황별 코드 레시피), `references/mechanics.md`(도구 실측 동작), `references/troubleshooting.md` 포함
+
+**적합한 용도:** 상품·가격 수집, 채용공고·리뷰 모니터링, 경쟁사 데이터 수집, 로그인 후 내 데이터 백업
+
+**범위 밖:** 단일 페이지 1회 조회·요약(WebFetch 로 충분), e2e 테스트·QA 자동화
 
 ---
 
