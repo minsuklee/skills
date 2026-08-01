@@ -17,6 +17,17 @@ Key features include: project-based task organization, due date tracking with ca
 CRITICAL: This is a local-first application. All data is stored in the browser using IndexedDB via Dexie.js. There is NO backend server, NO user accounts, and NO network requests. The app must work fully offline after initial load.
 </overview>
 
+<assumptions>
+  - Single-user only: no collaboration was mentioned, so no ownership/sharing model. If multi-user is needed later, the data model requires an owner concept and sync layer.
+  - Browser scope: latest 2 versions of evergreen browsers. No legacy requirement was stated.
+  - "Today" boundary uses the device's local timezone (no timezone setting in UI).
+</assumptions>
+
+<open_questions>
+  - Q1. Should completed tasks be auto-archived after N days, or kept forever? → affects storage-quota handling and the All Tasks view
+  - Q2. Is JSON export needed in v1 or acceptable as Phase 2? → affects scope_boundaries
+</open_questions>
+
 <scope_boundaries>
   <in_scope>
     - Project CRUD (create, rename, reorder, delete with all tasks)
@@ -258,6 +269,37 @@ src/
       - Subtitle: "No tasks due today." in 14px #9CA3AF
     </empty_state>
   </today_view>
+
+  <upcoming_view>
+    <header>
+      - Title: "Upcoming" in 28px / 700 weight
+      - Subtitle: date range "Feb 19 – Mar 4" in 14px #6B7280
+    </header>
+    <date_groups>
+      - One group per day for the next 14 days; days with no tasks are hidden
+      - Group header: "Tomorrow" / weekday name (this week) / "Mon, Mar 2" (later), 13px uppercase #6B7280, sticky on scroll
+      - Tasks within a group sorted by priority (high → none), then sortOrder
+    </date_groups>
+    <empty_state>
+      - Icon: calendar (48px, #9CA3AF)
+      - Title: "Nothing scheduled" / Subtitle: "Tasks with due dates in the next 14 days appear here."
+    </empty_state>
+  </upcoming_view>
+
+  <all_tasks_view>
+    <header>
+      - Title: "All Tasks" in 28px / 700 weight + total count badge
+    </header>
+    <project_groups>
+      - One collapsible group per project, Inbox first, then sidebar order
+      - Group header: color dot (8px) + project name (15px / 600) + count, chevron rotates 90° on collapse (150ms)
+      - Collapse state persists to localStorage key "taskflow-collapsed-projects"
+    </project_groups>
+    <empty_state>
+      - Icon: inbox (48px, #9CA3AF)
+      - Title: "No tasks yet" + CTA button "Add your first task" (focuses inline add input)
+    </empty_state>
+  </all_tasks_view>
 
   <task_item>
     - Height: 44px, padding 8px 12px
