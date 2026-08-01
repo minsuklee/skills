@@ -17,7 +17,7 @@ Robin이 만들어 사용하는 Claude Code Skill 모음입니다.
 | [manpower](#manpower) | AI 프롬프팅 스킬 레벨 측정 | `/manpower` |
 | [paper-trending](#paper-trending) | HuggingFace 트렌딩 논문 요약 | `트렌딩 논문 보여줘` |
 | [worklog](#worklog) | Claude Code 세션 기반 워크로그 | `/worklog` |
-| [project-spec-writer](#project-spec-writer) | XML 기반 프로젝트 스펙·빌드 플랜 작성 | `프로젝트 스펙 써줘` |
+| [project-spec-writer](#project-spec-writer) | XML 기반 프로젝트·기능 스펙(PRD)·빌드 플랜 작성 | `프로젝트 스펙 써줘` |
 | [codex-cli](#codex-cli) | OpenAI Codex CLI(`codex exec`) 호출·두 번째 의견·코드 리뷰 | `codex 로 한 번 더 봐줘` |
 | [codex-image](#codex-image) | Codex CLI 내장 `image_generation` 툴로 N장 병렬 이미지 생성 | `codex 로 이미지 5장 동시에` |
 | [power-crawl](#power-crawl) | Playwright MCP 기반 고속 웹 데이터 수집·크롤링 | `이 사이트 전체 페이지 돌면서 긁어와` |
@@ -164,15 +164,20 @@ HuggingFace Daily Papers에서 트렌딩 논문을 수집하여 한줄 요약 �
 
 ### project-spec-writer
 
-소프트웨어 프로젝트의 빌드 플랜·기술 스펙을 XML 구조의 마크다운 문서로 작성하는 스킬입니다.
+소프트웨어 프로젝트의 빌드 플랜·기술 스펙(PRD)을 XML 구조의 마크다운 문서로 작성하는 스킬입니다.
 
-- `<project_specification>` 루트 태그 기반 21개 섹션 표준화 (overview, technology_stack, file_structure, core_data_entities, route_definitions, pages_and_interfaces 등)
+- **3가지 모드** — 신규 프로젝트 스펙 / 기존 코드베이스 기능 스펙 / 기존 스펙 정제
+- `<project_specification>` 루트 태그 기반 27개 섹션 표준화 (overview, assumptions, technology_stack, core_data_entities, route_definitions, pages_and_interfaces, deployment_and_operations 등)
+- 프로젝트 유형별 섹션 교체 — 백엔드는 `api_endpoints`, CLI 는 `commands_and_flags`, 라이브러리는 `public_api`
 - 색상은 hex(`#1B4332`), 치수는 px, 라이브러리는 버전까지 — 모호함 없는 구체적 사양 강제
-- 데이터 모델·UI·디자인 시스템·구현 순서·성공 기준까지 한 문서에 망라
-- Claude Code, Cursor, Copilot Workspace 등 AI 코딩 에이전트가 그대로 소비 가능한 포맷
-- `references/xml-schema.md` 스키마와 `references/example-spec.md` 완성 예시 포함
+- 스펙 본문은 한국어 기본, XML 태그·필드명·경로·명령어는 영문 유지
+- 추측은 `<assumptions>`, 사용자 결정이 필요한 사항은 `<open_questions>` 로 분리해 명시
+- 라이브러리 버전은 실제 확인 후 기재 — 미검증 마이너 버전 기입 금지
+- `scripts/validate_spec.py` 로 구조·일관성 기계 검증 후 납품
 
-**적합한 용도:** 신규 앱 빌드 플랜, 기존 스펙 정제·확장, AI 에이전트에게 위임할 개발 명세 작성
+**참조 문서:** `references/xml-schema.md`(스키마), `references/example-spec.md`(웹앱 예시), `references/example-api-spec.md`(백엔드 API 예시), `references/feature-spec-mode.md`(기능 스펙 모드)
+
+**적합한 용도:** 신규 앱 빌드 플랜, 기존 서비스 기능 스펙, 기존 스펙 정제·확장, AI 에이전트에게 위임할 개발 명세 작성
 
 ---
 
